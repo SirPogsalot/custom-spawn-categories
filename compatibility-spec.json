@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "plugin_version": "0.3.0-beta1",
+  "source_package_revision": "beta1",
+  "tested_with": {
+    "mcreator": {
+      "version": "2026.2",
+      "build": "33518"
+    },
+    "generator_plugin": {
+      "id": "generator-26.1.x"
+    },
+    "generator": {
+      "id": "neoforge-26.1.2",
+      "buildfileversion": "26.1.2.95"
+    }
+  },
+  "mcreator": {
+    "required_archive_entries": [
+      "META-INF/MANIFEST.MF",
+      "net/mcreator/ui/modgui/ModElementGUI.class",
+      "net/mcreator/ui/modgui/LivingEntityGUI.class",
+      "net/mcreator/ui/procedure/ProcedureSelector.class",
+      "net/mcreator/ui/procedure/AbstractProcedureSelector.class",
+      "net/mcreator/ui/procedure/AbstractProcedureSelector$ReloadContext.class",
+      "net/mcreator/element/ModElementType.class",
+      "net/mcreator/element/ModElementTypeLoader.class",
+      "net/mcreator/element/GeneratableElement.class",
+      "net/mcreator/element/types/LivingEntity.class",
+      "net/mcreator/element/parts/MobSpawnType.class",
+      "net/mcreator/generator/mapping/MappableElement.class",
+      "net/mcreator/generator/Generator.class",
+      "net/mcreator/plugin/JavaPlugin.class",
+      "net/mcreator/plugin/MCREventListener.class",
+      "net/mcreator/plugin/events/PreGeneratorsLoadingEvent.class",
+      "net/mcreator/plugin/events/ui/ModElementGUIEvent.class",
+      "net/mcreator/plugin/events/ui/ModElementGUIEvent$AfterLoading.class",
+      "net/mcreator/workspace/Workspace.class",
+      "net/mcreator/workspace/elements/ModElement.class"
+    ],
+    "baseline_class_sha256": {
+      "net/mcreator/ui/modgui/ModElementGUI.class": "fce92edd24b2d4e108ff0a58847382a05068fee6adaf27fb0e6fc459b4f1c86b",
+      "net/mcreator/ui/modgui/LivingEntityGUI.class": "f6b14243705cf0a8068e00ac4d250aa1c900ae70dd0fc6ef0f1e57fd7c4b8855",
+      "net/mcreator/ui/procedure/ProcedureSelector.class": "0d3a402d3bee2028413e3c31c240dc8a52a105201099412e2365a29a84898a87",
+      "net/mcreator/ui/procedure/AbstractProcedureSelector.class": "e813c2af911cc803718d0aa5f29ed1839f078c83337e7d0167d7e13a04a97179",
+      "net/mcreator/ui/procedure/AbstractProcedureSelector$ReloadContext.class": "26165b5dc0f18c53ac7a73b727c07cd6a23da79891716ec40bb9adc83e3efef0",
+      "net/mcreator/element/ModElementTypeLoader.class": "ca2cc9d434769e71b525b10b83493a868883ed35e79bc4e8191aaa3646e1eda1",
+      "net/mcreator/element/types/LivingEntity.class": "a313959aa08b9d4bb53d5478f82edec63f75fc834feb5df1e8042f6dd3caaa1d",
+      "net/mcreator/generator/mapping/MappableElement.class": "5cbfca97d0366a4b03997e78f5054af88e32fd958de388a6fbd5f04b7d432c9d",
+      "net/mcreator/generator/Generator.class": "3d6243364c37aeb77914bc84577e3c174c96e0cb0a5a2016dfb23a2f95ba4f09"
+    },
+    "reflection_contracts": [
+      {
+        "class": "net.mcreator.ui.modgui.LivingEntityGUI",
+        "mode": "private",
+        "contains": [
+          "javax.swing.JComboBox<java.lang.String> mobSpawningType;"
+        ]
+      },
+      {
+        "class": "net.mcreator.element.types.LivingEntity",
+        "mode": "public",
+        "contains": [
+          "net.mcreator.element.parts.MobSpawnType mobSpawningType;"
+        ]
+      },
+      {
+        "class": "net.mcreator.generator.mapping.MappableElement",
+        "mode": "public",
+        "contains": [
+          "java.lang.String getUnmappedValue();"
+        ]
+      },
+      {
+        "class": "net.mcreator.ui.procedure.AbstractProcedureSelector$ReloadContext",
+        "mode": "public",
+        "contains": [
+          "create(net.mcreator.workspace.Workspace)"
+        ]
+      },
+      {
+        "class": "net.mcreator.generator.Generator",
+        "mode": "public",
+        "contains": [
+          "boolean generateElement(net.mcreator.element.GeneratableElement)"
+        ]
+      }
+    ]
+  },
+  "generator": {
+    "required_files": [
+      "generator.yaml",
+      "livingentity.definition.yaml",
+      "mappings/mobspawntypes.yaml",
+      "templates/livingentity/livingentity.java.ftl",
+      "templates/modbase/neoforge.mods.toml.ftl",
+      "templates/modbase/enumextensions.json.ftl"
+    ],
+    "baseline_file_sha256": {
+      "generator.yaml": "abe2d45f691ee4842775ca800c6c5c6711165a627900fd05395d71f7d7f27afe",
+      "livingentity.definition.yaml": "af0ab1e1ce83c17187226f4c5c95880cc18e60df5b4d1efea4f93123d2698ce3",
+      "mappings/mobspawntypes.yaml": "dd0528cc288ae5108734b66bf9dd844d5b645c66bcbaa319112c2c4cec8b3093",
+      "templates/livingentity/livingentity.java.ftl": "8aadf9b98c2f4266847bb7765bf5bd8714ac8cd6890811a51b209b0876c807e5",
+      "templates/modbase/neoforge.mods.toml.ftl": "6fbfe0673907b28fea7ac32e3424b4261a56ab204333e85802c58000064fe670",
+      "templates/modbase/enumextensions.json.ftl": "8d5747b51184405c5ac86ed0af049c1e7e99c512ceb90a9935a4c1f53af799ca"
+    },
+    "anchors": [
+      {
+        "file": "generator.yaml",
+        "severity": "FAIL",
+        "contains": [
+          "buildfileversion:",
+          "base_templates:",
+          "template: modbase/enumextensions.json.ftl"
+        ]
+      },
+      {
+        "file": "livingentity.definition.yaml",
+        "severity": "FAIL",
+        "contains": [
+          "template: livingentity/livingentity.java.ftl"
+        ]
+      },
+      {
+        "file": "mappings/mobspawntypes.yaml",
+        "severity": "FAIL",
+        "contains": [
+          "monster: MobCategory.MONSTER",
+          "creature: MobCategory.CREATURE",
+          "ambient: MobCategory.AMBIENT",
+          "waterCreature: MobCategory.WATER_CREATURE",
+          "misc: MobCategory.MISC"
+        ]
+      },
+      {
+        "file": "templates/livingentity/livingentity.java.ftl",
+        "severity": "FAIL",
+        "contains": [
+          "public static void init(RegisterSpawnPlacementsEvent event)",
+          "data.mobSpawningType.getUnmappedValue()",
+          "RegisterSpawnPlacementsEvent.Operation.REPLACE",
+          "setPersistenceRequired()",
+          "doesDespawnWhenIdle"
+        ]
+      },
+      {
+        "file": "templates/modbase/neoforge.mods.toml.ftl",
+        "severity": "WARN",
+        "contains": [
+          "enumExtensions=\"META-INF/enumextensions.json\""
+        ]
+      },
+      {
+        "file": "templates/modbase/enumextensions.json.ftl",
+        "severity": "WARN",
+        "contains": [
+          "net/minecraft/world/entity/raid/Raid$RaiderType",
+          "constructor"
+        ]
+      }
+    ]
+  },
+  "plugin_source_contracts": [
+    {
+      "file": "src/main/resources/neoforge-26.1.2/spawncategory.definition.yaml",
+      "severity": "FAIL",
+      "contains": [
+        "global_templates:",
+        "spawncategory/custom_mob_categories.java.ftl"
+      ]
+    },
+    {
+      "file": "src/main/resources/neoforge-26.1.2/generator.yaml",
+      "severity": "FAIL",
+      "contains": [
+        "modbase/enumextensions.json.ftl",
+        "${w.hasElementsOfType('spawncategory')}"
+      ]
+    },
+    {
+      "file": "src/main/resources/neoforge-26.1.2/templates/modbase/neoforge.mods.toml.ftl",
+      "severity": "FAIL",
+      "contains": [
+        "w.hasElementsOfType('spawncategory')",
+        "enumExtensions=\"META-INF/enumextensions.json\""
+      ]
+    },
+    {
+      "file": "src/main/resources/neoforge-26.1.2/templates/livingentity/livingentity.java.ftl",
+      "severity": "FAIL",
+      "contains": [
+        "selectedSpawnType?starts_with(\"CUSTOM:\")",
+        "hasCategorySpawnProcedure",
+        "RegisterSpawnPlacementsEvent.Operation.REPLACE"
+      ]
+    },
+    {
+      "file": "src/main/resources/procedures/entity_is_spawn_category.json",
+      "severity": "FAIL",
+      "contains": [
+        "\"datalist\": \"mobspawntypes\"",
+        "\"customEntryProviders\": \"spawncategory\""
+      ]
+    },
+    {
+      "file": "src/main/resources/procedures/spawn_category_loaded_count.json",
+      "severity": "FAIL",
+      "contains": [
+        "\"output\": \"Number\"",
+        "\"colour\": \"%{BKY_MATH_HUE}\""
+      ]
+    }
+  ],
+  "manual_runtime_contracts": [
+    "NeoForge enum extension still supports net.minecraft.world.entity.MobCategory with constructor descriptor (Ljava/lang/String;IZZI)V.",
+    "EntityType#getCategory() returns the expected MobCategory for vanilla and extended categories.",
+    "NaturalSpawner includes extended MobCategory values without a plugin-owned spawn loop.",
+    "RegisterSpawnPlacementsEvent still supports replacement registration for custom Living Entity placement predicates.",
+    "Living Entities with Despawn when idle disabled remain persistence-required and should not be expected to obey a natural-spawn cap as a hard loaded-entity ceiling."
+  ],
+  "reference_artifacts": {
+    "known_good_plugin_zip_sha256": "ab8f5186788dc2838a33096dde2a12d8da48fbb86fdc8cba75fe3de058ee4eae",
+    "original_alpha21_source_zip_sha256": "3dc4c26f136874e8d0aff823edde231115eb2fbe7081876db4c5abd67fbcee39",
+    "note": "Beta 1 promotes the tested Alpha 21 runtime implementation. Historical Alpha 21 hashes remain as provenance; final Beta 1 artifact hashes are recorded externally to avoid self-referential source-bundle hashes.",
+    "promoted_from_plugin_version": "0.3.0-alpha21"
+  }
+}

@@ -1,0 +1,8 @@
+base_templates:
+  - template: modbase/enumextensions.json.ftl
+    writer: json
+    name: "@RESROOT/META-INF/enumextensions.json"
+    condition_any:
+      - "${w.getGElementsOfType('livingentity')?filter(e -> e.mobBehaviourType == \"Raider\")?size != 0}"
+      - "${w.hasElementsOfType('spawncategory')}"
+    _merge_policy: override_all

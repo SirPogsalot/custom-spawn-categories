@@ -1,0 +1,7 @@
+global_templates:
+  - template: spawncategory/custom_mob_categories.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@JavaModNameMobCategories.java"
+
+templates:
+  - template: spawncategory/diagnostic.java.ftl
+    name: "@SRCROOT/@BASEPACKAGEPATH/init/@NAMEDefinition.java"

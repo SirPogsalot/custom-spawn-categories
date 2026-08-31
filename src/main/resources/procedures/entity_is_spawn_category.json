@@ -1,0 +1,30 @@
+{
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "entity",
+      "check": "Entity"
+    },
+    {
+      "type": "field_data_list_selector",
+      "name": "category",
+      "datalist": "mobspawntypes",
+      "customEntryProviders": "spawncategory"
+    }
+  ],
+  "inputsInline": true,
+  "output": "Boolean",
+  "colour": "#d68e00",
+  "mcreator": {
+    "toolbox_id": "spawn_categories",
+    "toolbox_init": [
+      "<value name=\"entity\"><block type=\"entity_from_deps\"></block></value>"
+    ],
+    "inputs": [
+      "entity"
+    ],
+    "fields": [
+      "category"
+    ]
+  }
+}
