@@ -9,6 +9,6 @@
     "name": "Custom Spawn Categories",
     "version": "0.3.0-beta1",
     "description": "Beta release of custom spawn categories with safe identifiers, custom placement and spawn conditions, persistence-aware cap guidance, and vanilla/custom procedure tools.",
-    "author": "OpenAI and sirpogsalot"
+    "author": "sirpogsalot"
   }
 }
