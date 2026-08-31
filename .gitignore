@@ -2,3 +2,6 @@ build/
 logs/
 reports/
 *.class
+*.exe
+*.log
+generator-*.zip
