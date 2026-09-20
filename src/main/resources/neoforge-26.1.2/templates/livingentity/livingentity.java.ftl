@@ -653,7 +653,9 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 		if (this.level().isClientSide()) {
 			<#list data.animations as animation>
 				<#if !animation.walking>
-					<#if hasProcedure(animation.condition)>
+					<#if animation.syncedDataCondition??>
+					this.animationState${animation?index}.animateWhen(this.entityData.get(DATA_${animation.syncedDataCondition}), this.tickCount);
+					<#elseif hasProcedure(animation.condition)>
 					this.animationState${animation?index}.animateWhen(<@procedureCode animation.condition, {
 						"x": "this.getX()",
 						"y": "this.getY()",
@@ -761,6 +763,11 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 		Level world = this.level();
 		Entity entity = this;
 		return <@procedureOBJToConditionCode data.breatheUnderwater false true/>;
+	}
+
+	<#-- Fix #6456 - NeoForge did not patch canDrownInFluidType yet, so we also need use canBreatheUnderwater -->
+	@Override public boolean canBreatheUnderwater() {
+		return !this.canDrownInFluidType(NeoForgeMod.WATER_TYPE.value());
 	}
 	</#if>
 
@@ -901,6 +908,15 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 	}
 	</#if>
 
+	<#if data.spawnThisMob && data.mobSpawningType.getUnmappedValue() == "monster" && data.mobBehaviourType != "Creature">
+	<#-- Fix #6451 - monsters won't spawn in end in 26.1 as it has skylight.
+	     EnderMan fixes this by returning 0 in getWalkTargetValue, but this has other unwanted consequences -->
+	@Override public boolean checkSpawnRules(LevelAccessor level, EntitySpawnReason reason) {
+		return this.level().dimension() == Level.OVERWORLD ? super.checkSpawnRules(level, reason) : true;
+	}
+	</#if>
+
+	<#-- CUSTOM SPAWN CATEGORIES: BEGIN spawn placement override -->
 	public static void init(RegisterSpawnPlacementsEvent event) {
 		<#if data.spawnThisMob>
 			<#assign selectedSpawnType = data.mobSpawningType.getUnmappedValue()>
@@ -977,12 +993,12 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 					<#elseif customSpawnCondition == "MONSTER">
 					(entityType, world, reason, pos, random) ->
 							(world.getDifficulty() != Difficulty.PEACEFUL &&
-							Monster.isDarkEnoughToSpawn(world, pos, random) &&
+							(EntitySpawnReason.ignoresLightRequirements(reason) || Monster.isDarkEnoughToSpawn(world, pos, random)) &&
 							Mob.checkMobSpawnRules(entityType, world, reason, pos, random))
 					<#elseif customSpawnCondition == "CREATURE">
 					(entityType, world, reason, pos, random) ->
 							(world.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON) &&
-							world.getRawBrightness(pos, 0) > 8)
+							(EntitySpawnReason.ignoresLightRequirements(reason) || world.getRawBrightness(pos, 0) > 8))
 					<#elseif customSpawnCondition == "WATER_CREATURE">
 					(entityType, world, reason, pos, random) ->
 							(world.getBlockState(pos).is(Blocks.WATER) &&
@@ -1012,7 +1028,7 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 					<#else>
 					(entityType, world, reason, pos, random) ->
 							(world.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON) &&
-							world.getRawBrightness(pos, 0) > 8)
+							(EntitySpawnReason.ignoresLightRequirements(reason) || world.getRawBrightness(pos, 0) > 8))
 				</#if>,
 				RegisterSpawnPlacementsEvent.Operation.REPLACE
 			);
@@ -1080,11 +1096,7 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 						return <@procedureOBJToConditionCode categorySpawnConditionProcedure/>;
 					}
 					<#else>
-					(entityType, world, reason, pos, random) ->
-							(world.getFluidState(pos.below()).is(FluidTags.WATER) &&
-							world.getBlockState(pos.above()).is(Blocks.WATER) &&
-							pos.getY() >= (world.getSeaLevel() - 13) &&
-							pos.getY() <= world.getSeaLevel())
+					GlowSquid::checkGlowSquidSpawnRules
 					</#if>,
 					RegisterSpawnPlacementsEvent.Operation.REPLACE
 			);
@@ -1108,7 +1120,7 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 					<#else>
 						(entityType, world, reason, pos, random) ->
 								(world.getDifficulty() != Difficulty.PEACEFUL &&
-								Monster.isDarkEnoughToSpawn(world, pos, random) &&
+								(EntitySpawnReason.ignoresLightRequirements(reason) || Monster.isDarkEnoughToSpawn(world, pos, random)) &&
 								Mob.checkMobSpawnRules(entityType, world, reason, pos, random))
 					</#if>,
 					RegisterSpawnPlacementsEvent.Operation.REPLACE
@@ -1117,6 +1129,7 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 		</#if>
 	}
 
+	<#-- CUSTOM SPAWN CATEGORIES: END spawn placement override -->
 	<#if data.mobBehaviourType == "Raider">
 	@Override public void applyRaidBuffs(ServerLevel serverLevel, int num, boolean logic) {}
 	</#if>
@@ -1151,7 +1164,8 @@ public class ${name}Entity extends ${extendsClass} <#if interfaces?size gt 0>imp
 		builder = builder.add(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
 		</#if>
 
-		<#if aiblocks?seq_contains("follow_item_in_hands")>
+		<#-- TemptGoal reads TEMPT_RANGE, and these vanilla AI bases register it in super.registerGoals() -->
+		<#if ["Chicken", "Cow", "Horse", "Ocelot", "Pig"]?seq_contains(data.aiBase) || aiblocks?seq_contains("follow_item_in_hands")>
 		builder = builder.add(Attributes.TEMPT_RANGE, 10);
 		</#if>
 

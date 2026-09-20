@@ -361,8 +361,13 @@ public final class SpawnCategoryGUI extends ModElementGUI<SpawnCategory> {
         return element;
     }
 
-    @Override
+    // MCreator 2026.2 calls the no-argument hook, while 2026.3+ passes forceActions.
+    // Keep both entry points so the same source remains compatible across the transition.
     protected void afterGeneratableElementGenerated() {
+        afterGeneratableElementGenerated(false);
+    }
+
+    public void afterGeneratableElementGenerated(boolean forceActions) {
         String reference = "CUSTOM:" + modElement.getName();
         for (ModElement element : mcreator.getWorkspace().getModElements()) {
             if (!"livingentity".equals(element.getTypeString())) {
