@@ -4,7 +4,8 @@
   "javaplugin": "net.example.spawncategories.Launcher",
   "supportedversions": [
     2026002,
-    2026003
+    2026003,
+    202600338715
   ],
   "info": {
     "name": "Custom Spawn Categories",
