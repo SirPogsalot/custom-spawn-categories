@@ -91,10 +91,27 @@ function Test-WholeFileOverrideAudit {
     $pluginText = Normalize-Newlines (Get-Content -LiteralPath $pluginPath -Raw)
     $upstreamText = Normalize-Newlines $upstreamText
 
-    $pluginStart = $pluginText.IndexOf([string]$Contract.plugin_start, [System.StringComparison]::Ordinal)
-    $pluginEnd = $pluginText.IndexOf([string]$Contract.plugin_end, [System.StringComparison]::Ordinal)
-    $upstreamStart = $upstreamText.IndexOf([string]$Contract.upstream_start, [System.StringComparison]::Ordinal)
-    $upstreamEnd = $upstreamText.IndexOf([string]$Contract.upstream_end, [System.StringComparison]::Ordinal)
+	$pluginStart = $pluginText.IndexOf([string]$Contract.plugin_start, [System.StringComparison]::Ordinal)
+	$pluginEnd = if ($pluginStart -ge 0) {
+		$pluginText.IndexOf(
+			[string]$Contract.plugin_end,
+			$pluginStart + ([string]$Contract.plugin_start).Length,
+			[System.StringComparison]::Ordinal
+		)
+	} else {
+		-1
+	}
+
+	$upstreamStart = $upstreamText.IndexOf([string]$Contract.upstream_start, [System.StringComparison]::Ordinal)
+	$upstreamEnd = if ($upstreamStart -ge 0) {
+		$upstreamText.IndexOf(
+			[string]$Contract.upstream_end,
+			$upstreamStart + ([string]$Contract.upstream_start).Length,
+			[System.StringComparison]::Ordinal
+		)
+	} else {
+		-1
+	}
 
     if ($pluginStart -lt 0 -or $pluginEnd -lt 0 -or $pluginEnd -le $pluginStart -or $upstreamStart -lt 0 -or $upstreamEnd -lt 0 -or $upstreamEnd -le $upstreamStart) {
         Add-Result ([string]$Contract.severity) 'Generator override audit' ([string]$Contract.plugin_file) 'Could not locate the declared plugin-owned or upstream comparison region.'
