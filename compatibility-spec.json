@@ -158,6 +158,17 @@
           "constructor"
         ]
       }
+    ],
+    "whole_file_override_audits": [
+      {
+        "plugin_file": "src/main/resources/neoforge-26.1.2/templates/livingentity/livingentity.java.ftl",
+        "upstream_file": "templates/livingentity/livingentity.java.ftl",
+        "plugin_start": "\t<#-- CUSTOM SPAWN CATEGORIES: BEGIN spawn placement override -->",
+        "plugin_end": "\t<#-- CUSTOM SPAWN CATEGORIES: END spawn placement override -->",
+        "upstream_start": "\tpublic static void init(RegisterSpawnPlacementsEvent event) {",
+        "upstream_end": "\t<#if data.mobBehaviourType == \"Raider\">",
+        "severity": "FAIL"
+      }
     ]
   },
   "plugin_source_contracts": [
@@ -191,7 +202,9 @@
       "contains": [
         "selectedSpawnType?starts_with(\"CUSTOM:\")",
         "hasCategorySpawnProcedure",
-        "RegisterSpawnPlacementsEvent.Operation.REPLACE"
+        "RegisterSpawnPlacementsEvent.Operation.REPLACE",
+        "CUSTOM SPAWN CATEGORIES: BEGIN spawn placement override",
+        "CUSTOM SPAWN CATEGORIES: END spawn placement override"
       ]
     },
     {
@@ -208,6 +221,14 @@
       "contains": [
         "\"output\": \"Number\"",
         "\"colour\": \"%{BKY_MATH_HUE}\""
+      ]
+    },
+    {
+      "file": "src/main/java/net/example/spawncategories/elements/SpawnCategoryGUI.java",
+      "severity": "FAIL",
+      "contains": [
+        "protected void afterGeneratableElementGenerated()",
+        "public void afterGeneratableElementGenerated(boolean forceActions)"
       ]
     }
   ],

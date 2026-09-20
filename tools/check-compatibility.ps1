@@ -66,6 +66,60 @@ function Get-ZipEntryText {
     return [System.Text.Encoding]::UTF8.GetString($bytes)
 }
 
+function Normalize-Newlines {
+    param([string]$Text)
+    if ($null -eq $Text) { return $null }
+    return $Text.Replace("`r`n", "`n").Replace("`r", "`n")
+}
+
+function Test-WholeFileOverrideAudit {
+    param($Archive, [string]$SelectedGeneratorId, $Contract)
+
+    $pluginPath = Join-Path $ProjectRoot ([string]$Contract.plugin_file)
+    if (-not (Test-Path -LiteralPath $pluginPath)) {
+        Add-Result ([string]$Contract.severity) 'Generator override audit' ([string]$Contract.plugin_file) 'Plugin override file is missing.'
+        return
+    }
+
+    $upstreamEntry = $SelectedGeneratorId + '/' + [string]$Contract.upstream_file
+    $upstreamText = Get-ZipEntryText $Archive $upstreamEntry
+    if ($null -eq $upstreamText) {
+        Add-Result ([string]$Contract.severity) 'Generator override audit' ([string]$Contract.plugin_file) "Upstream file is missing: $upstreamEntry"
+        return
+    }
+
+    $pluginText = Normalize-Newlines (Get-Content -LiteralPath $pluginPath -Raw)
+    $upstreamText = Normalize-Newlines $upstreamText
+
+    $pluginStart = $pluginText.IndexOf([string]$Contract.plugin_start, [System.StringComparison]::Ordinal)
+    $pluginEnd = $pluginText.IndexOf([string]$Contract.plugin_end, [System.StringComparison]::Ordinal)
+    $upstreamStart = $upstreamText.IndexOf([string]$Contract.upstream_start, [System.StringComparison]::Ordinal)
+    $upstreamEnd = $upstreamText.IndexOf([string]$Contract.upstream_end, [System.StringComparison]::Ordinal)
+
+    if ($pluginStart -lt 0 -or $pluginEnd -lt 0 -or $pluginEnd -le $pluginStart -or $upstreamStart -lt 0 -or $upstreamEnd -lt 0 -or $upstreamEnd -le $upstreamStart) {
+        Add-Result ([string]$Contract.severity) 'Generator override audit' ([string]$Contract.plugin_file) 'Could not locate the declared plugin-owned or upstream comparison region.'
+        return
+    }
+
+    $pluginEnd += ([string]$Contract.plugin_end).Length
+    $pluginPrefix = $pluginText.Substring(0, $pluginStart)
+    $pluginSuffix = $pluginText.Substring($pluginEnd)
+    if ($pluginSuffix.StartsWith("`n")) { $pluginSuffix = $pluginSuffix.Substring(1) }
+    $upstreamPrefix = $upstreamText.Substring(0, $upstreamStart)
+    $upstreamSuffix = $upstreamText.Substring($upstreamEnd)
+
+    $prefixMatches = $pluginPrefix -ceq $upstreamPrefix
+    $suffixMatches = $pluginSuffix -ceq $upstreamSuffix
+    if ($prefixMatches -and $suffixMatches) {
+        Add-Result 'PASS' 'Generator override audit' ([string]$Contract.plugin_file) 'Override matches the selected upstream template everywhere outside the declared plugin-owned region.'
+    } else {
+        $parts = New-Object System.Collections.Generic.List[string]
+        if (-not $prefixMatches) { $parts.Add('content before the plugin-owned region differs') }
+        if (-not $suffixMatches) { $parts.Add('content after the plugin-owned region differs') }
+        Add-Result ([string]$Contract.severity) 'Generator override audit' ([string]$Contract.plugin_file) ((($parts -join '; ') + '. Rebase this whole-file override onto the selected upstream template before release.'))
+    }
+}
+
 function Test-SourceContract {
     param($Contract)
     $path = Join-Path $ProjectRoot ([string]$Contract.file)
@@ -394,6 +448,12 @@ if ([string]::IsNullOrWhiteSpace($GeneratorZip)) {
                     } else {
                         Add-Result ([string]$contract.severity) 'Generator anchors' ([string]$contract.file) "Missing: $needle"
                     }
+                }
+            }
+
+            if ($null -ne $Spec.generator.whole_file_override_audits) {
+                foreach ($contract in $Spec.generator.whole_file_override_audits) {
+                    Test-WholeFileOverrideAudit $archive $GeneratorId $contract
                 }
             }
         }
